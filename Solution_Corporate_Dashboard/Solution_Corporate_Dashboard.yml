@@ -1,0 +1,27 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: custody-solution-corporate-dashboard
+  labels:
+    app: custody-solution-corporate-dashboard
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: custody-solution-corporate-dashboard
+  template:
+    metadata:
+      labels:
+        app: custody-solution-corporate-dashboard
+    spec:
+      containers:
+        - name: custody-solution-corporate-dashboard
+          image: 780202038201.dkr.ecr.eu-north-1.amazonaws.com/custody-solution-corporate-dashboard:latest
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 80
+          envFrom:
+            - configMapRef:
+                name: custody-solution-corporate-dashboard-config
+            #- secretRef:
+             #   name: custody-solution-corporate-dashboard-secret

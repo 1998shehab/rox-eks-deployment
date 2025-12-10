@@ -1,0 +1,40 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: custody-super-admin-api
+  labels:
+    app: custody-super-admin-api
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: custody-super-admin-api
+  template:
+    metadata:
+      labels:
+        app: custody-super-admin-api
+    spec:
+      serviceAccountName: deployment-sa
+      containers:
+        - name: custody-super-admin-api
+          image: 780202038201.dkr.ecr.eu-north-1.amazonaws.com/custody-super-admin-api:latest
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 3000
+          command: ["/bin/sh"]
+          args:
+            - "-c"
+            - |
+              ln -sf /mnt/secrets/super-admin-api-secrets /usr/src/app/.env && \
+              node dist/src/main
+          volumeMounts:
+            - name: secrets-store
+              mountPath: /mnt/secrets
+              readOnly: true
+      volumes:
+        - name: secrets-store
+          csi:
+            driver: secrets-store.csi.k8s.io
+            readOnly: true
+            volumeAttributes:
+              secretProviderClass: super-admin-api-secrets

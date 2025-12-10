@@ -1,0 +1,56 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: custody-private-server
+  labels:
+    app: custody-private-server
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: custody-private-server
+  template:
+    metadata:
+      labels:
+        app: custody-private-server
+    spec:
+      serviceAccountName: deployment-sa
+      nodeSelector:
+        nodegroup-type: custody-bridge-private-servers
+      
+      # Tolerate the taint so pods can be scheduled
+      tolerations:
+        - key: "custody-bridge-private-only"
+          operator: "Equal"
+          value: "true"
+          effect: "NoSchedule"
+      containers:
+        - name: custody-private-server
+          image: 780202038201.dkr.ecr.eu-north-1.amazonaws.com/custody-private-server:latest
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 80
+          command: ["/bin/sh"]
+          args:
+            - "-c"
+            - |
+              ln -sf /mnt/secrets/private-server-secrets /usr/src/app/.env && \
+              node dist/src/main
+          volumeMounts:
+            - name: secrets-store
+              mountPath: /mnt/secrets
+              readOnly: true
+            - name: account-secrets
+              mountPath: /usr/src/app/account-secrets.json
+              subPath: account-secrets.json 
+              readOnly: true
+      volumes:
+        - name: secrets-store
+          csi:
+            driver: secrets-store.csi.k8s.io
+            readOnly: true
+            volumeAttributes:
+              secretProviderClass: private-server-secrets
+        - name: account-secrets
+          secret:
+            secretName: custody-account-secrets

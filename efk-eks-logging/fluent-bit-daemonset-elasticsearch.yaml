@@ -1,0 +1,52 @@
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: fluent-bit
+  namespace: efklog
+  labels:
+    k8s-app: fluent-bit-logging
+    version: v1
+    kubernetes.io/cluster-service: "true"
+spec:
+  selector:
+    matchLabels:
+      k8s-app: fluent-bit-logging
+  template:
+    metadata:
+      labels:
+        k8s-app: fluent-bit-logging
+        version: v1
+        kubernetes.io/cluster-service: "true"
+    spec:
+      containers:
+      - name: fluent-bit
+        image: fluent/fluent-bit:1.8.4
+        env:
+          - name: FLUENT_ELASTICSEARCH_HOST
+            value: "quickstart-es-http"
+          - name: FLUENT_ELASTICSEARCH_PORT
+            value: "9200"
+          - name: FLUENT_ELASTICSEARCH_SCHEME
+            value: "https"
+          - name: FLUENT_ELASTICSEARCH_USER
+            value: "elastic"
+          - name: FLUENT_ELASTICSEARCH_PASSWORD
+            value: "om7014597G4FXX7tqQPrM5LD"
+        volumeMounts:
+          - name: k
+            mountPath: /k
+          - name: varlog
+            mountPath: /var/log
+          - name: progdata
+            mountPath: /programdata
+      volumes:
+        - name: k
+          hostPath:
+            path: /k
+        - name: varlog
+          hostPath:
+            path: /var/log
+        - name: progdata
+          hostPath:
+            path: /programdata
+

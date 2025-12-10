@@ -1,0 +1,31 @@
+---
+- name: Update web servers
+  hosts: devserver
+  remote_user: root
+
+  vars:
+    image_repo: 780202038201.dkr.ecr.eu-north-1.amazonaws.com/custody-super-admin-dashboard
+    timestamp_tag: "{{ lookup('pipe', 'date +%Y%m%d%H%M') }}"
+    full_image: "{{ image_repo }}:{{ timestamp_tag }}"
+
+  tasks:
+    - name: commands to deploy super-admin-dashboard with version tag
+      ansible.builtin.shell: |
+        cd /root/prod/Custody_Super_Admin_Dashboard
+        git pull
+        aws ecr get-login-password --region eu-north-1 | docker login --username AWS --password-stdin 780202038201.dkr.ecr.eu-north-1.amazonaws.com
+        docker build -t {{ full_image }} .
+        docker push {{ full_image }}
+        kubectl set image deployment/custody-super-admin-dashboard custody-super-admin-dashboard={{ full_image }} --record
+      register: admin_dashboard_output
+
+
+    - name: delete the image from the server  
+      ansible.builtin.shell: |
+        docker images --format '{{ "{{.Repository}}:{{.Tag}}" }}' | grep '^{{ image_repo }}:' | xargs -r docker rmi
+      when: admin_dashboard_output is success
+
+
+    - name: show output
+      debug:
+        var: admin_dashboard_output.stdout_lines

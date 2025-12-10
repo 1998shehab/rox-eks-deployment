@@ -1,0 +1,57 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: custody-solution-api-config
+data:
+  NODE_ENV: "PROD"
+  PORT: "3000"
+  CORPORATE_DASHBOARD_URL: "https://*.roxcustody.io"
+  APP_URL: "https://*.api-custody.roxcustody.io"
+  SUPER_ADMIN_APP_URL: "https://superadmin.roxcustody.io"
+
+  DATABASE_HOST: "rox-api-mysql.cf02y0oys1cq.eu-north-1.rds.amazonaws.com"
+  #DATABASE_WRITE_HOST: "aurora-instance-rox-api-0.cf02y0oys1cq.eu-north-1.rds.amazonaws.com"
+  #DATABASE_READ_HOST: "aurora-instance-rox-api-0.cf02y0oys1cq.eu-north-1.rds.amazonaws.com"
+  DATABASE_NAME: "rox_api_database"
+  DATABASE_PORT: "3306"
+  DATABASE_USER: "admin"
+
+  REDIS_HOST: "redis-15976.c311.eu-central-1-1.ec2.redns.redis-cloud.com"
+  REDIS_PORT_NUMBER: "15976"
+  REDIS_DB_NUMBER: "0"
+
+  SENDGRID_EMAIL: "noreply@roxcustody.io"
+
+  JWT_EXPIRES_IN: "7d"
+  CUSTODY_ADMIN_URL: "https://superadmin.roxcustody.io/api"
+  REFRESH_TOKEN_EXPIRY: "180d"
+  ACCESS_TOKEN_EXPIRY: "7d"
+  FORGET_PASSWORD_JWT_EXPIRES_IN: "7d"
+
+  RABBITMQ_URL: "amqps://vnnojfgt:Oz7wQuW_4R9-jqDc8jLcJuWU4byLbuY9@loyal-black-scorpion.rmq4.cloudamqp.com/vnnojfgt"  
+  RABBITMQ_TOPIC_EXCHANGE: "custodyExchangeTopic"
+  RABBITMQ_CUSTODY_QUEUE_NAME: "roxcustody_corporate_prod"
+  RABBITMQ_SUPERADMIN_QUEUE_NAME: "roxcustody_superadmin_prod"
+  RABBITMQ_CUSTODY_TRANSACTION_LISTENER_QUEUE_NAME: "rox_custody_transaction_listener"
+  RABBITMQ_CUSTODY_BRIDGE_QUEUE_NAME: "roxcustody_keys_bridge"
+
+  AWS_ENDPOINT: "https://s3.amazonaws.com"
+  AWS_DOMAIN: "s3.amazonaws.com"
+  BUCKETREGION : "eu-north-1"
+  BUCKETNAME: "custody-prod"
+  AWS_DIRECTORY: "/public"
+
+
+  ACTIVATE_BLOCKCHAIN_TRANSACTION: "true"
+
+  TRON_API_KEY: "6f398b6c-d47d-4d65-b846-cf83a73cf6a6"
+
+  EXCHANGES_SERVICE_BASE_URL: "http://45.76.138.204:51001"
+
+  FIREBASE_CLOUD_FUNCTIONS_API_BASE_URL : "https://us-central1-rox-statistics.cloudfunctions.net"
+  FIREBASE_DATABASE_URL: "https://rox-statistics-default-rtdb.firebaseio.com"
+
+  ROX_WEBSITE_URL: www.roxcustody.io
+
+
+

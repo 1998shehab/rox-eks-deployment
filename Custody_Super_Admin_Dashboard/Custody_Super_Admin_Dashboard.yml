@@ -1,0 +1,25 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: custody-super-admin-dashboard
+  labels:
+    app: custody-super-admin-dashboard
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: custody-super-admin-dashboard
+  template:
+    metadata:
+      labels:
+        app: custody-super-admin-dashboard
+    spec:
+      containers:
+        - name: custody-super-admin-dashboard
+          image: 780202038201.dkr.ecr.eu-north-1.amazonaws.com/custody-super-admin-dashboard:latest
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 80
+          envFrom:
+            - configMapRef:
+                name: custody-super-admin-dashboard-config

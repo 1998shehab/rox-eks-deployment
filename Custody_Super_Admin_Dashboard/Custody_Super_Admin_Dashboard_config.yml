@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: custody-super-admin-dashboard-config
+data:
+  VITE_APP_HOST: "true"
+  APP_PORT: "4173"
+  DOCKER_APP_PORT: "4173"
+  VITE_APP_PORT: "4173"
+  APP_NAME: "Custody_Super_Admin"
+  VITE_APP_BASE_URL: "https://api-admin.roxcustody.com/api"

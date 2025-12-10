@@ -1,0 +1,33 @@
+grafana.ini:
+  smtp:
+    enabled: true
+    host: smtp.gmail.com:587
+    user: "roxgrafana@gmail.com"
+    # read the password from env so we don't hardcode it in values
+    password: $__env{GF_SMTP_PASSWORD}
+    from_address: "roxgrafana@gmail.com"
+    from_name: "Grafana"
+    skip_verify: false
+    
+envFromSecret: grafana-smtp
+
+# smtp:
+#   enabled: true
+#   host: smtp.gmail.com:587
+#   user: "shehabemad3333@gmail.com"
+#   password: "bfezdqcadxfteqvk"   # DO NOT use your Gmail login password
+#   skip_verify: false
+#   from_address: "shehabemad3333@gmail.com"
+#   from_name: "Grafana"
+
+#new password= fciw mglh bwbm kxgb 
+
+# Load env vars from this secret
+
+
+# (Optional, but recommended to persist dashboards/alerts)
+# persistence:
+#   enabled: true
+#   size: 10Gi
+#   accessModes: [ "ReadWriteOnce" ]
+#   # storageClassName: <your-storage-class>   # set if required

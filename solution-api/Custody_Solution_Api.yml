@@ -1,0 +1,41 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: custody-solution-api
+  labels:
+    app: custody-solution-api
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: custody-solution-api
+  template:
+    metadata:
+      labels:
+        app: custody-solution-api
+    spec:
+      serviceAccountName: deployment-sa
+      containers:
+        - name: custody-solution-api
+          image: 780202038201.dkr.ecr.eu-north-1.amazonaws.com/custody-solution-api:latest
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 3000
+          command: ["/bin/sh"]
+          args:
+            - "-c"
+            - |
+              ln -sf /mnt/secrets/solution-api-secrets /usr/src/app/.env && \
+              node dist/src/main
+          volumeMounts:
+            - name: secrets-store
+              mountPath: /mnt/secrets
+              readOnly: true
+      volumes:
+        - name: secrets-store
+          csi:
+            driver: secrets-store.csi.k8s.io
+            readOnly: true
+            volumeAttributes:
+              secretProviderClass: solution-api-secrets
+

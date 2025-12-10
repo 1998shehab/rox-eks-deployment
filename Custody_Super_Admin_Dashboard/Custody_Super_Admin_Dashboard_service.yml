@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: custody-super-admin-dashboard-service
+spec:
+  type: ClusterIP
+  selector:
+    app: custody-super-admin-dashboard
+  ports:
+    - port: 80        # Port the service exposes
+      targetPort: 80  # Port your frontend app listens on in the pod (e.g., React/Vue usually use 3000)
+      protocol: TCP

@@ -1,0 +1,40 @@
+---
+- name: Update web servers
+  hosts: devserver
+  remote_user: root
+  vars:
+    image_repo: 780202038201.dkr.ecr.eu-north-1.amazonaws.com/custody-solution-corporate-dashboard
+    timestamp_tag: "{{ lookup('pipe', 'date +%Y%m%d%H%M') }}"
+    full_image: "{{ image_repo }}:{{ timestamp_tag }}"
+
+
+  tasks:
+  - name: commands to deploy corporate-dashboard
+    ansible.builtin.shell: |
+      cd /root/prod/Custody_Solution_Corporate_Dashboard
+      git pull
+      aws ecr get-login-password --region eu-north-1 | docker login --username AWS --password-stdin 780202038201.dkr.ecr.eu-north-1.amazonaws.com
+      docker build -t {{ full_image }} .
+      docker push {{ full_image }}
+      kubectl set image deployment/custody-solution-corporate-dashboard custody-solution-corporate-dashboard={{ full_image }} --record
+    register: dashboard_output
+
+
+  - name: delete old images except current
+    shell: |
+      docker images --format '{{ "{{.Repository}}:{{.Tag}}" }}' \
+      | grep '^{{ image_repo }}:' \
+      | grep -v '{{ full_image }}' \
+      | xargs -r docker rmi
+    when: solution_api_output is success
+
+
+
+  - name: show output
+    debug:
+      var: dashboard_output.stdout_lines
+
+
+
+
+

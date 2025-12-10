@@ -1,0 +1,40 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: custody-keys-bridge
+  labels:
+    app: custody-keys-bridge
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: custody-keys-bridge
+  template:
+    metadata:
+      labels:
+        app: custody-keys-bridge
+    spec:
+      serviceAccountName: deployment-sa
+      containers:
+        - name: custody-keys-bridge
+          image: 780202038201.dkr.ecr.eu-north-1.amazonaws.com/custody-keys-bridge:latest
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 80
+          command: ["/bin/sh"]
+          args:
+            - "-c"
+            - |
+              ln -sf /mnt/secrets/keys-bridge-secrets /usr/src/app/.env && \
+              node dist/src/main
+          volumeMounts:
+            - name: secrets-store
+              mountPath: /mnt/secrets
+              readOnly: true
+      volumes:
+        - name: secrets-store
+          csi:
+            driver: secrets-store.csi.k8s.io
+            readOnly: true
+            volumeAttributes:
+              secretProviderClass: keys-bridge-secrets

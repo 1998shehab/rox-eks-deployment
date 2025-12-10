@@ -1,0 +1,47 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: custody-policy-manager
+  labels:
+    app: custody-policy-manager
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: custody-policy-manager
+  template:
+    metadata:
+      labels:
+        app: custody-policy-manager
+    spec:
+      serviceAccountName: deployment-sa
+      containers:
+        - name: custody-policy-manager
+          image: 780202038201.dkr.ecr.eu-north-1.amazonaws.com/custody-policy-manager:latest
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 80
+          command: ["/bin/sh"]
+          args:
+            - "-c"
+            - |
+              ln -sf /mnt/secrets/policy-manager-secrets /usr/src/app/.env && \
+              node dist/src/main
+          volumeMounts:
+            - name: secrets-store
+              mountPath: /mnt/secrets
+              readOnly: true
+            - name: policy-account-secrets
+              mountPath: /usr/src/app/account-secrets.json
+              subPath: account-secrets.json 
+              readOnly: true
+      volumes:
+        - name: secrets-store
+          csi:
+            driver: secrets-store.csi.k8s.io
+            readOnly: true
+            volumeAttributes:
+              secretProviderClass: policy-manager-secrets
+        - name: policy-account-secrets
+          secret:
+            secretName: policy-account-secrets
